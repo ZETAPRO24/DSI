@@ -83,12 +83,7 @@ git checkout -b mejora-interfaz
 
 ---
 
-## 👥 Integrantes del equipo
 
-- Zecarlos Calero  
-- *(Agrega aquí los demás miembros del equipo)*
-
----
 
 📂 **Estructura base del proyecto**
 ```
@@ -199,12 +194,6 @@ git checkout -b mejora-interfaz
 
 ---
 
-## 👥 Integrantes del equipo
-
-- Zecarlos Calero  
-- *(Agrega aquí los demás miembros del equipo)*
-
----
 
 📂 **Estructura base del proyecto**
 ```
