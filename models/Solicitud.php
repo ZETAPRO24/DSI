@@ -3,12 +3,13 @@ class Solicitud {
     private $conn;
     private $table = "solicitudes";
 
-    public $id;
+    public $id_solicitud;
     public $id_estudiante;
     public $estado;
     public $paso_actual;
     public $observaciones;
-    
+    public $fecha_solicitud;
+
     // Datos de empresa
     public $nombre_empresa;
     public $ruc;
@@ -23,30 +24,38 @@ class Solicitud {
         $this->conn = $db;
     }
 
+    // ============================================================
+    // CREAR NUEVA SOLICITUD CON DATOS DE EMPRESA
+    // ============================================================
     public function crear() {
-        // Iniciar transacción
-        $this->conn->beginTransaction();
-        
         try {
+            $this->conn->beginTransaction();
+
             // Insertar solicitud
-            $query = "INSERT INTO " . $this->table . " 
-                      (id_estudiante, estado, paso_actual, observaciones) 
+            $query = "INSERT INTO solicitudes 
+                      (id_estudiante, estado, paso_actual, observaciones)
                       VALUES (:id_estudiante, 'Pendiente', 1, :observaciones)";
-            
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_estudiante", $this->id_estudiante);
             $stmt->bindParam(":observaciones", $this->observaciones);
             $stmt->execute();
-            
-            $solicitud_id = $this->conn->lastInsertId();
-            
-            // Insertar datos de empresa
+
+            // Obtener el ID generado automáticamente (por trigger)
+            $queryLast = "SELECT id_solicitud FROM solicitudes 
+                          WHERE id_estudiante = :id_estudiante 
+                          ORDER BY fecha_solicitud DESC LIMIT 1";
+            $stmtLast = $this->conn->prepare($queryLast);
+            $stmtLast->bindParam(":id_estudiante", $this->id_estudiante);
+            $stmtLast->execute();
+            $row = $stmtLast->fetch(PDO::FETCH_ASSOC);
+            $idGenerado = $row['id_solicitud'];
+
+            // Insertar empresa
             $query2 = "INSERT INTO empresas 
-                       (id_solicitud, nombre_empresa, ruc, direccion, telefono, supervisor, email_supervisor, fecha_inicio, duracion_meses) 
+                       (id_solicitud, nombre_empresa, ruc, direccion, telefono, supervisor, email_supervisor, fecha_inicio, duracion_meses)
                        VALUES (:id_solicitud, :nombre_empresa, :ruc, :direccion, :telefono, :supervisor, :email_supervisor, :fecha_inicio, :duracion)";
-            
             $stmt2 = $this->conn->prepare($query2);
-            $stmt2->bindParam(":id_solicitud", $solicitud_id);
+            $stmt2->bindParam(":id_solicitud", $idGenerado);
             $stmt2->bindParam(":nombre_empresa", $this->nombre_empresa);
             $stmt2->bindParam(":ruc", $this->ruc);
             $stmt2->bindParam(":direccion", $this->direccion);
@@ -56,21 +65,38 @@ class Solicitud {
             $stmt2->bindParam(":fecha_inicio", $this->fecha_inicio);
             $stmt2->bindParam(":duracion", $this->duracion_meses);
             $stmt2->execute();
-            
+
             $this->conn->commit();
             return true;
-            
-        } catch(Exception $e) {
+
+        } catch (Exception $e) {
             $this->conn->rollBack();
+            error_log("Error al crear solicitud: " . $e->getMessage());
             return false;
         }
     }
 
+    // ============================================================
+    // LISTAR TODAS LAS SOLICITUDES CON DATOS DE ESTUDIANTE Y EMPRESA
+    // ============================================================
     public function leerTodos() {
-        $query = "SELECT s.*, e.codigo, e.nombre, e.apellido, e.carrera, emp.nombre_empresa, emp.ruc
-                  FROM " . $this->table . " s
-                  INNER JOIN estudiantes e ON s.id_estudiante = e.id
-                  LEFT JOIN empresas emp ON s.id = emp.id_solicitud
+        $query = "SELECT 
+                        s.id_solicitud,
+                        s.id_estudiante,
+                        s.estado,
+                        s.paso_actual,
+                        s.observaciones,
+                        s.fecha_solicitud,
+                        e.nombre,
+                        e.apellido,
+                        e.carrera,
+                        e.creditos_aprobados,
+                        e.email,
+                        emp.nombre_empresa,
+                        emp.ruc
+                  FROM solicitudes s
+                  INNER JOIN estudiantes e ON s.id_estudiante = e.codigo
+                  LEFT JOIN empresas emp ON s.id_solicitud = emp.id_solicitud
                   ORDER BY s.fecha_solicitud DESC";
         
         $stmt = $this->conn->prepare($query);
@@ -78,3 +104,4 @@ class Solicitud {
         return $stmt;
     }
 }
+?>

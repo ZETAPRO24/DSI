@@ -9,38 +9,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Solicitud de Prácticas</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; margin-bottom: 10px; text-align: center; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
-        .section { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #2196F3; }
-        .section h2 { color: #2196F3; margin-bottom: 15px; font-size: 18px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #2196F3; }
-        textarea { resize: vertical; min-height: 80px; }
-        .btn { background: #2196F3; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 10px; }
-        .btn:hover { background: #1976D2; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 5px; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .nav { margin-bottom: 20px; }
-        .nav a { color: #2196F3; text-decoration: none; margin-right: 15px; }
-        .nav a:hover { text-decoration: underline; }
-        .info-box { background: #e3f2fd; border: 1px solid #2196F3; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .info-box strong { color: #1976D2; }
-    </style>
+    <link rel="stylesheet" href="views/style.css">
 </head>
 <body>
     <div class="container">
         <div class="nav">
             <a href="index.php">← Inicio</a>
-            <a href="index.php?action=registro_estudiante">Registrar Estudiante</a>
             <a href="index.php?action=lista_solicitudes">Ver Solicitudes</a>
         </div>
 
@@ -52,7 +26,7 @@
         <?php endif; ?>
 
         <div class="info-box">
-            <strong>ℹ️ Importante:</strong> Debes tener al menos 150 créditos aprobados para solicitar prácticas pre profesionales.
+            <strong>Importante:</strong> Debes tener al menos 150 créditos aprobados para solicitar prácticas preprofesionales.
         </div>
 
         <form method="POST" action="index.php?action=nueva_solicitud">
@@ -65,7 +39,7 @@
                     <select name="id_estudiante" required>
                         <option value="">-- Selecciona un estudiante --</option>
                         <?php while($row = $estudiantes->fetch(PDO::FETCH_ASSOC)): ?>
-                            <option value="<?php echo $row['id']; ?>">
+                            <option value="<?php echo $row['codigo']; ?>">
                                 <?php echo $row['codigo'] . ' - ' . $row['nombre'] . ' ' . $row['apellido'] . ' (' . $row['creditos_aprobados'] . ' créditos)'; ?>
                             </option>
                         <?php endwhile; ?>
@@ -119,7 +93,7 @@
 
             <!-- SECCIÓN 4: PRÁCTICAS -->
             <div class="section">
-                <h2>📅 Detalles de las Prácticas</h2>
+                <h2>🗓️ Detalles de las Prácticas</h2>
                 
                 <div class="grid-2">
                     <div class="form-group">
@@ -145,8 +119,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn">📤 Enviar Solicitud</button>
+            <button type="submit" class="btn">Enviar</button>
         </form>
     </div>
 </body>
-</html><?php
+</html>

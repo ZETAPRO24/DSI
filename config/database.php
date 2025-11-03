@@ -4,7 +4,7 @@
 // ============================================
 class Database {
     private $host = "localhost";
-    private $db_name = "practi_pro";
+    private $db_name = "practicas_preprofesionales";
     private $username = "root";
     private $password = "";
     public $conn;
